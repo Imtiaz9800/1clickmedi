@@ -76,6 +76,17 @@ export default {
 					800: '#074892',
 					900: '#0a3c78',
 					950: '#07264a',
+				},
+				// Softer pastel colors for a relaxing feel
+				pastel: {
+					green: '#F2FCE2',
+					yellow: '#FEF7CD',
+					orange: '#FEC6A1',
+					purple: '#E5DEFF',
+					pink: '#FFDEE2',
+					peach: '#FDE1D3',
+					blue: '#D3E4FD',
+					gray: '#F1F0FB'
 				}
 			},
 			borderRadius: {
