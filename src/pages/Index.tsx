@@ -7,8 +7,22 @@ import CategoryCards from "@/components/CategoryCards";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Building, Microscope, Stethoscope, Store } from "lucide-react";
+import { initializeDemo } from "@/utils/initializeDemo";
+import { toast } from "@/components/ui/use-toast";
 
 const Index: React.FC = () => {
+  const handleInitializeDemo = async () => {
+    try {
+      await initializeDemo();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to initialize demo data",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -47,6 +61,22 @@ const Index: React.FC = () => {
               className="w-full"
             >
               <SearchBar />
+            </motion.div>
+
+            {/* Demo initialization button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-6"
+            >
+              <Button 
+                variant="outline" 
+                onClick={handleInitializeDemo}
+                className="bg-medical-50 text-medical-600 border-medical-200 hover:bg-medical-100"
+              >
+                Initialize Demo Admin (admin@gmail.com / 123456)
+              </Button>
             </motion.div>
           </div>
         </div>
