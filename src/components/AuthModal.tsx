@@ -13,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -63,30 +64,27 @@ const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
-    // Simulate login
+    // Perform login with Supabase
     setLoginLoading(true);
     try {
-      // In a real app, you would make an API call here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // For demo purposes, we'll use a simple credential check
-      if (loginEmail === "admin@example.com" && loginPassword === "password") {
-        setIsLoggedIn(true);
-        onOpenChange(false);
-        toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-        });
-      } else if (loginEmail === "user@example.com" && loginPassword === "password") {
-        setIsLoggedIn(true);
-        onOpenChange(false);
-        toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-        });
-      } else {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (error) {
         setErrors({
-          loginForm: "Invalid email or password",
+          loginForm: error.message,
+        });
+        return;
+      }
+
+      if (data.user) {
+        setIsLoggedIn(true);
+        onOpenChange(false);
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
         });
       }
     } catch (error) {
@@ -127,18 +125,35 @@ const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
-    // Simulate signup
+    // Perform signup with Supabase
     setSignupLoading(true);
     try {
-      // In a real app, you would make an API call here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      setIsLoggedIn(true);
-      onOpenChange(false);
-      toast({
-        title: "Account created",
-        description: "Welcome to DocFinder!",
+      const { data, error } = await supabase.auth.signUp({
+        email: signupEmail,
+        password: signupPassword,
+        options: {
+          data: {
+            first_name: signupName.split(' ')[0],
+            last_name: signupName.split(' ').slice(1).join(' '),
+          },
+        },
       });
+
+      if (error) {
+        setErrors({
+          signupForm: error.message,
+        });
+        return;
+      }
+
+      if (data.user) {
+        setIsLoggedIn(true);
+        onOpenChange(false);
+        toast({
+          title: "Account created",
+          description: "Welcome to DocFinder!",
+        });
+      }
     } catch (error) {
       setErrors({
         signupForm: "An error occurred. Please try again.",
@@ -231,18 +246,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
                     {loginLoading ? "Logging in..." : "Login"}
                   </Button>
 
-                  <div className="relative my-4">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200" />
-                    </div>
-                    <div className="relative flex justify-center text-xs">
-                      <span className="px-2 bg-white text-gray-500">Demo Accounts</span>
-                    </div>
-                  </div>
-
-                  <div className="text-xs text-center text-gray-600">
-                    <p className="mb-1">Admin: admin@example.com / password</p>
-                    <p>User: user@example.com / password</p>
+                  <div className="text-xs text-center text-gray-600 mt-4">
+                    <p>After creating an account, you'll need to verify your email</p>
                   </div>
                 </form>
               </TabsContent>
