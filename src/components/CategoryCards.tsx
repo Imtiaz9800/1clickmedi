@@ -1,8 +1,7 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Brain, Eye, Tooth, Bone, Baby, Stethoscope, Users } from "lucide-react";
+import { Heart, Brain, Eye, Pill, Bone, Baby, Stethoscope, Users } from "lucide-react";
 
 interface CategoryCardProps {
   name: string;
@@ -50,7 +49,7 @@ const CategoryCards: React.FC = () => {
     },
     {
       name: "Dentistry",
-      icon: <Tooth className="h-6 w-6" />,
+      icon: <Pill className="h-6 w-6" />,
       count: 142,
     },
     {
