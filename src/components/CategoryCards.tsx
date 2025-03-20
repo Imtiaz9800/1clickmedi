@@ -21,13 +21,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ name, icon, count, delay, l
       transition={{ duration: 0.3, delay: delay * 0.05 }}
     >
       <Link to={link}>
-        <Card className="card-hover bg-white border border-gray-100 h-full cursor-pointer">
+        <Card className="card-hover bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 h-full cursor-pointer">
           <CardContent className="p-6 flex flex-col items-center text-center">
-            <div className="p-3 rounded-full bg-medical-50 text-medical-600 mb-4">
+            <div className="p-3 rounded-full bg-medical-50 text-medical-600 dark:bg-medical-900/50 dark:text-medical-300 mb-4">
               {icon}
             </div>
-            <h3 className="font-medium text-base mb-1">{name}</h3>
-            <p className="text-sm text-gray-500">{count} Specialists</p>
+            <h3 className="font-medium text-base mb-1 dark:text-white">{name}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{count} Specialists</p>
           </CardContent>
         </Card>
       </Link>
@@ -88,11 +88,11 @@ const CategoryCards: React.FC = () => {
   ];
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">Browse by Specialty</h2>
-          <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Browse by Specialty</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Find specialized healthcare professionals across various medical fields
           </p>
         </div>

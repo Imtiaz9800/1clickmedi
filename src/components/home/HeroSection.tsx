@@ -22,8 +22,8 @@ const HeroSection: React.FC = () => {
   return (
     <section className="relative pb-6 pt-20 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-medical-50/30 to-transparent" />
-        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-white to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-medical-50/30 to-transparent dark:from-gray-900/50 dark:to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-white to-transparent dark:from-gray-900 dark:to-transparent" />
       </div>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -33,7 +33,7 @@ const HeroSection: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-gray-900 tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight mb-4">
               Find the Right Healthcare Provider for Your Needs
             </h1>
           </motion.div>
@@ -43,7 +43,7 @@ const HeroSection: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
               Connect with doctors, medical shops, pathology labs, and hospitals - all in one place
             </p>
           </motion.div>
@@ -57,7 +57,7 @@ const HeroSection: React.FC = () => {
             <SearchBar />
           </motion.div>
 
-          {/* Demo initialization button */}
+          {/* Demo initialization button - text removed as requested */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,16 +67,16 @@ const HeroSection: React.FC = () => {
             <Button 
               variant="outline" 
               onClick={handleInitializeDemo}
-              className="bg-medical-50 text-medical-600 border-medical-200 hover:bg-medical-100"
+              className="bg-medical-50 text-medical-600 border-medical-200 hover:bg-medical-100 dark:bg-medical-900 dark:text-medical-300 dark:border-medical-800 dark:hover:bg-medical-800"
             >
-              Initialize Demo Admin (admin@gmail.com / 123456)
+              Admin Portal Access
             </Button>
           </motion.div>
         </div>
       </div>
 
-      <div className="hidden md:block absolute -bottom-14 -left-14 w-64 h-64 rounded-full bg-medical-100/50 blur-3xl" />
-      <div className="hidden md:block absolute -bottom-24 -right-20 w-80 h-80 rounded-full bg-medical-50/60 blur-3xl" />
+      <div className="hidden md:block absolute -bottom-14 -left-14 w-64 h-64 rounded-full bg-medical-100/50 dark:bg-medical-900/30 blur-3xl" />
+      <div className="hidden md:block absolute -bottom-24 -right-20 w-80 h-80 rounded-full bg-medical-50/60 dark:bg-medical-900/20 blur-3xl" />
     </section>
   );
 };

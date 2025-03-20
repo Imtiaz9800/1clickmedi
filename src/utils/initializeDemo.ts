@@ -2,6 +2,7 @@
 import { createAdminUser } from "./createAdminUser";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export const initializeDemo = async () => {
   try {
@@ -25,6 +26,9 @@ export const initializeDemo = async () => {
             title: "Already Logged In",
             description: "You are already logged in as an admin user.",
           });
+          
+          // Redirect to admin page after successful login
+          window.location.href = "/admin";
           return { success: true, message: "Already logged in as admin" };
         }
       }
@@ -38,6 +42,9 @@ export const initializeDemo = async () => {
         title: "Admin Access Granted",
         description: result.message,
       });
+      
+      // Redirect to admin page after successful login
+      window.location.href = "/admin";
     } else {
       toast({
         title: "Failed to Access Admin Dashboard",

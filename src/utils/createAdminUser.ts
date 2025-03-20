@@ -20,7 +20,7 @@ export const createAdminUser = async (email: string, password: string) => {
       console.log('Admin user already exists');
       
       // Try to sign in the existing user
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -28,6 +28,10 @@ export const createAdminUser = async (email: string, password: string) => {
       if (signInError) {
         console.error('Error signing in admin:', signInError.message);
         return { success: false, message: 'Login failed: ' + signInError.message };
+      }
+      
+      if (!data.user) {
+        return { success: false, message: 'Failed to login as admin user' };
       }
       
       toast({
