@@ -1,8 +1,8 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Building, Microscope, Stethoscope, Store } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ServiceCard: React.FC<{
   title: string;
@@ -13,30 +13,30 @@ const ServiceCard: React.FC<{
   index: number;
 }> = ({ title, description, icon, link, color, index }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      viewport={{ once: true }}
-      className="rounded-xl p-6 border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow card-hover"
-    >
-      <div className={`rounded-full w-14 h-14 ${color} flex items-center justify-center mb-5`}>
-        {icon}
-      </div>
-      <h3 className="text-xl font-medium text-gray-900 mb-2">
-        {title}
-      </h3>
-      <p className="text-gray-600 mb-5">
-        {description}
-      </p>
-      <Button
-        variant="link"
-        className="p-0 h-auto text-medical-600 hover:text-medical-800"
-        asChild
+    <Link to={link}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        viewport={{ once: true }}
+        className="rounded-xl p-6 border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow card-hover cursor-pointer"
       >
-        <a href={link}>Browse {title} →</a>
-      </Button>
-    </motion.div>
+        <div className={`rounded-full w-14 h-14 ${color} flex items-center justify-center mb-5`}>
+          {icon}
+        </div>
+        <h3 className="text-xl font-medium text-gray-900 mb-2">
+          {title}
+        </h3>
+        <p className="text-gray-600 mb-5">
+          {description}
+        </p>
+        <div
+          className="text-medical-600 hover:text-medical-800 font-medium"
+        >
+          Browse {title} →
+        </div>
+      </motion.div>
+    </Link>
   );
 };
 

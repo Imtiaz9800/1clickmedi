@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { StarIcon, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface FeaturedItemProps {
   name: string;
@@ -14,6 +15,7 @@ interface FeaturedItemProps {
   image: string;
   location: string;
   delay: number;
+  link: string;
 }
 
 const typeLabels = {
@@ -38,6 +40,7 @@ const FeaturedItem: React.FC<FeaturedItemProps> = ({
   image,
   location,
   delay,
+  link,
 }) => {
   return (
     <motion.div
@@ -45,41 +48,43 @@ const FeaturedItem: React.FC<FeaturedItemProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: delay * 0.1 }}
     >
-      <Card className="overflow-hidden card-hover border border-gray-100">
-        <CardContent className="p-0">
-          <div className="p-4">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16 rounded-xl border border-gray-100">
-                <AvatarImage src={image} alt={name} />
-                <AvatarFallback className="rounded-xl bg-medical-100 text-medical-700 text-lg">
-                  {name.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="space-y-1">
-                <h3 className="font-medium text-lg">{name}</h3>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={`${typeColors[type]}`}>
-                    {typeLabels[type]}
-                  </Badge>
-                  {specialty && (
-                    <span className="text-sm text-gray-500">{specialty}</span>
-                  )}
+      <Link to={link}>
+        <Card className="overflow-hidden card-hover border border-gray-100 cursor-pointer">
+          <CardContent className="p-0">
+            <div className="p-4">
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-16 w-16 rounded-xl border border-gray-100">
+                  <AvatarImage src={image} alt={name} />
+                  <AvatarFallback className="rounded-xl bg-medical-100 text-medical-700 text-lg">
+                    {name.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <h3 className="font-medium text-lg">{name}</h3>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className={`${typeColors[type]}`}>
+                      {typeLabels[type]}
+                    </Badge>
+                    {specialty && (
+                      <span className="text-sm text-gray-500">{specialty}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 flex justify-between items-center">
+                <div className="flex items-center text-sm text-gray-500">
+                  <MapPin className="h-3.5 w-3.5 mr-1" />
+                  {location}
+                </div>
+                <div className="flex items-center">
+                  <StarIcon className="h-4 w-4 fill-yellow-400 stroke-yellow-400" />
+                  <span className="ml-1 text-sm font-medium">{rating.toFixed(1)}</span>
                 </div>
               </div>
             </div>
-            <div className="mt-3 flex justify-between items-center">
-              <div className="flex items-center text-sm text-gray-500">
-                <MapPin className="h-3.5 w-3.5 mr-1" />
-                {location}
-              </div>
-              <div className="flex items-center">
-                <StarIcon className="h-4 w-4 fill-yellow-400 stroke-yellow-400" />
-                <span className="ml-1 text-sm font-medium">{rating.toFixed(1)}</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Link>
     </motion.div>
   );
 };
@@ -93,6 +98,7 @@ const FeaturedSection: React.FC = () => {
       rating: 4.9,
       image: "/placeholder.svg",
       location: "Central Hospital, New York",
+      link: "/doctors/sarah-johnson"
     },
     {
       name: "MedPlus Pharmacy",
@@ -100,6 +106,7 @@ const FeaturedSection: React.FC = () => {
       rating: 4.7,
       image: "/placeholder.svg",
       location: "Broadway St, New York",
+      link: "/medical-shops/medplus-pharmacy"
     },
     {
       name: "CityLab Diagnostics",
@@ -108,6 +115,7 @@ const FeaturedSection: React.FC = () => {
       rating: 4.8,
       image: "/placeholder.svg",
       location: "5th Avenue, New York",
+      link: "/labs/citylab-diagnostics"
     },
     {
       name: "Metro General Hospital",
@@ -115,6 +123,7 @@ const FeaturedSection: React.FC = () => {
       rating: 4.6,
       image: "/placeholder.svg",
       location: "Park Avenue, New York",
+      link: "/hospitals/metro-general"
     },
   ];
 

@@ -1,18 +1,41 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
 export const createAdminUser = async (email: string, password: string) => {
   try {
     // First check if the user already exists
-    const { data: existingUser } = await supabase
+    const { data: existingUser, error: userCheckError } = await supabase
       .from('profiles')
       .select('*')
       .eq('email', email)
       .maybeSingle();
     
+    if (userCheckError) {
+      console.error('Error checking existing user:', userCheckError.message);
+      return { success: false, message: userCheckError.message };
+    }
+    
     if (existingUser) {
       console.log('Admin user already exists');
-      return { success: true, message: 'Admin user already exists' };
+      
+      // Try to sign in the existing user
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (signInError) {
+        console.error('Error signing in admin:', signInError.message);
+        return { success: false, message: 'Login failed: ' + signInError.message };
+      }
+      
+      toast({
+        title: "Admin Login Successful",
+        description: "Welcome back to the admin dashboard!",
+      });
+      
+      return { success: true, message: 'Admin login successful' };
     }
 
     // Create the user with Supabase Auth
@@ -41,6 +64,11 @@ export const createAdminUser = async (email: string, password: string) => {
       console.error('Error updating admin role:', updateError.message);
       return { success: false, message: updateError.message };
     }
+
+    toast({
+      title: "Admin Account Created",
+      description: "Your admin account has been created successfully. Please verify your email.",
+    });
 
     return { 
       success: true, 
