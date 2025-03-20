@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -153,6 +154,14 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.doctors}</div>
                 <CardDescription>Total registered doctors</CardDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-4 w-full border-medical-200 text-medical-700 hover:bg-medical-50 dark:border-medical-800 dark:text-medical-300 dark:hover:bg-medical-900"
+                  onClick={() => navigate('/admin/doctors')}
+                >
+                  Manage Doctors
+                </Button>
               </CardContent>
             </Card>
 
@@ -166,6 +175,14 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.hospitals}</div>
                 <CardDescription>Total registered hospitals</CardDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-4 w-full border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-900"
+                  onClick={() => navigate('/admin/hospitals')}
+                >
+                  Manage Hospitals
+                </Button>
               </CardContent>
             </Card>
 
@@ -179,6 +196,14 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.medicalShops}</div>
                 <CardDescription>Total registered shops</CardDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-4 w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900"
+                  onClick={() => navigate('/admin/medical-shops')}
+                >
+                  Manage Shops
+                </Button>
               </CardContent>
             </Card>
 
@@ -192,6 +217,14 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.pathologyLabs}</div>
                 <CardDescription>Total registered labs</CardDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-4 w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-900"
+                  onClick={() => navigate('/admin/labs')}
+                >
+                  Manage Labs
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -218,11 +251,11 @@ const AdminDashboard: React.FC = () => {
 
             {/* Quick Actions Tab */}
             <TabsContent value="quick-actions" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex items-center space-x-2">
-                      <Users className="h-5 w-5 text-medical-600 dark:text-medical-400" />
+                      <Stethoscope className="h-5 w-5 text-medical-600 dark:text-medical-400" />
                       <CardTitle className="text-lg">Add New Doctor</CardTitle>
                     </div>
                   </CardHeader>
@@ -253,6 +286,7 @@ const AdminDashboard: React.FC = () => {
                     </p>
                     <Button 
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600"
+                      onClick={() => navigate('/admin/hospitals')}
                     >
                       <PlusCircle className="h-4 w-4 mr-2" />
                       Add Hospital
@@ -263,20 +297,41 @@ const AdminDashboard: React.FC = () => {
                 <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex items-center space-x-2">
-                      <Settings className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                      <CardTitle className="text-lg">Site Settings</CardTitle>
+                      <Store className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      <CardTitle className="text-lg">Add Medical Shop</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                      Configure website settings, categories, and system preferences.
+                      Create a new medical shop profile with services and contact details.
                     </p>
                     <Button 
-                      variant="outline"
-                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                      onClick={() => navigate('/admin/medical-shops')}
                     >
-                      <Settings className="h-4 w-4 mr-2" />
-                      Site Settings
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Add Medical Shop
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-center space-x-2">
+                      <Microscope className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      <CardTitle className="text-lg">Add Pathology Lab</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                      Add a new pathology lab with test offerings and contact information.
+                    </p>
+                    <Button 
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-500 dark:hover:bg-purple-600"
+                      onClick={() => navigate('/admin/labs')}
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Add Pathology Lab
                     </Button>
                   </CardContent>
                 </Card>
@@ -316,31 +371,100 @@ const AdminDashboard: React.FC = () => {
               </Card>
             </TabsContent>
 
-            {/* Other tabs would go here */}
+            {/* Hospitals Tab */}
             <TabsContent value="hospitals" className="mt-6">
-              <Card className="bg-white dark:bg-gray-800 p-6">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Hospital Management</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  This feature will be available soon. Check back later!
-                </p>
+              <Card className="bg-white dark:bg-gray-800">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl">Manage Hospitals</CardTitle>
+                    <Button 
+                      onClick={() => navigate('/admin/hospitals')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600"
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Add New Hospital
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    Add, edit or remove hospital profiles
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Separator className="my-4" />
+                  <div className="text-center py-10">
+                    <Button 
+                      onClick={() => navigate('/admin/hospitals')}
+                      variant="outline" 
+                      className="px-8"
+                    >
+                      Go to Hospital Management
+                    </Button>
+                  </div>
+                </CardContent>
               </Card>
             </TabsContent>
 
             <TabsContent value="medical-shops" className="mt-6">
-              <Card className="bg-white dark:bg-gray-800 p-6">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Medical Shop Management</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  This feature will be available soon. Check back later!
-                </p>
+              <Card className="bg-white dark:bg-gray-800">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl">Manage Medical Shops</CardTitle>
+                    <Button 
+                      onClick={() => navigate('/admin/medical-shops')}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Add New Medical Shop
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    Add, edit or remove medical shop profiles
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Separator className="my-4" />
+                  <div className="text-center py-10">
+                    <Button 
+                      onClick={() => navigate('/admin/medical-shops')}
+                      variant="outline" 
+                      className="px-8"
+                    >
+                      Go to Medical Shop Management
+                    </Button>
+                  </div>
+                </CardContent>
               </Card>
             </TabsContent>
 
             <TabsContent value="labs" className="mt-6">
-              <Card className="bg-white dark:bg-gray-800 p-6">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Pathology Lab Management</h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  This feature will be available soon. Check back later!
-                </p>
+              <Card className="bg-white dark:bg-gray-800">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl">Manage Pathology Labs</CardTitle>
+                    <Button 
+                      onClick={() => navigate('/admin/labs')}
+                      className="bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-500 dark:hover:bg-purple-600"
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Add New Pathology Lab
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    Add, edit or remove pathology lab profiles
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Separator className="my-4" />
+                  <div className="text-center py-10">
+                    <Button 
+                      onClick={() => navigate('/admin/labs')}
+                      variant="outline" 
+                      className="px-8"
+                    >
+                      Go to Pathology Lab Management
+                    </Button>
+                  </div>
+                </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
