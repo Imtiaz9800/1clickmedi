@@ -2,7 +2,6 @@
 import { createAdminUser } from "./createAdminUser";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 export const initializeDemo = async () => {
   try {
@@ -43,8 +42,11 @@ export const initializeDemo = async () => {
         description: result.message,
       });
       
-      // Redirect to admin page after successful login
-      window.location.href = "/admin";
+      // Wait a moment before redirecting to ensure toast is visible
+      setTimeout(() => {
+        // Redirect to admin page after successful login
+        window.location.href = "/admin";
+      }, 1000);
     } else {
       toast({
         title: "Failed to Access Admin Dashboard",

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,6 +44,19 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
   // Form error state
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Add a success state
+  const [authSuccess, setAuthSuccess] = useState(false);
+
+  // Effect to close modal after successful auth with delay
+  useEffect(() => {
+    if (authSuccess) {
+      const timer = setTimeout(() => {
+        onOpenChange(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [authSuccess, onOpenChange]);
 
   // Handle login form submission
   const handleLogin = async (e: React.FormEvent) => {
@@ -81,7 +94,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
       if (data.user) {
         setIsLoggedIn(true);
-        onOpenChange(false);
+        setAuthSuccess(true);
         toast({
           title: "Login Successful",
           description: "Welcome back!",
@@ -148,11 +161,17 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
       if (data.user) {
         setIsLoggedIn(true);
-        onOpenChange(false);
+        setAuthSuccess(true);
         toast({
           title: "Account created",
           description: "Welcome to DocFinder!",
         });
+        
+        // Clear form after successful signup
+        setSignupName("");
+        setSignupEmail("");
+        setSignupPassword("");
+        setSignupConfirmPassword("");
       }
     } catch (error) {
       setErrors({

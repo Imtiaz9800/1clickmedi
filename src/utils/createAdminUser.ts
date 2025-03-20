@@ -39,7 +39,7 @@ export const createAdminUser = async (email: string, password: string) => {
         description: "Welcome back to the admin dashboard!",
       });
       
-      return { success: true, message: 'Admin login successful' };
+      return { success: true, message: 'Admin login successful', user: data.user };
     }
 
     // Create the user with Supabase Auth
@@ -71,12 +71,13 @@ export const createAdminUser = async (email: string, password: string) => {
 
     toast({
       title: "Admin Account Created",
-      description: "Your admin account has been created successfully. Please verify your email.",
+      description: "Your admin account has been created successfully.",
     });
 
     return { 
       success: true, 
-      message: 'Admin user created successfully. Please verify your email to complete registration.' 
+      message: 'Admin user created successfully.',
+      user: authUser.user
     };
   } catch (error) {
     console.error('Unexpected error creating admin user:', error);
