@@ -13,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
   const [signupLoading, setSignupLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!isOpen) {
@@ -124,7 +126,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className={`max-w-md ${isMobile ? 'max-h-[90vh] overflow-y-auto p-4' : ''}`}>
         <DialogHeader>
           <DialogTitle className="text-xl text-center">{activeTab === "login" ? "Login" : "Sign Up"}</DialogTitle>
           <DialogDescription className="text-center">

@@ -1,25 +1,44 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Users, PlusCircle, Building, Store, Microscope, Stethoscope } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import {
+  Users,
+  Store,
+  Flask,
+  Building2,
+  MessageSquare,
+  TrendingUp,
+  UserCheck,
+  CalendarDays,
+} from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+interface Stats {
+  doctors: number;
+  medicalShops: number;
+  labs: number;
+  hospitals: number;
+  contactMessages: number;
+}
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState({
+  const isMobile = useIsMobile();
+  const [stats, setStats] = useState<Stats>({
     doctors: 0,
-    hospitals: 0,
     medicalShops: 0,
-    pathologyLabs: 0,
+    labs: 0,
+    hospitals: 0,
+    contactMessages: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -55,7 +74,7 @@ const AdminDashboard: React.FC = () => {
         }
 
         setIsAdmin(true);
-        await fetchStats();
+        fetchStats();
       } catch (error) {
         console.error("Error checking admin status:", error);
         navigate('/');
@@ -69,378 +88,248 @@ const AdminDashboard: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      // Get counts from different tables
-      const doctorsPromise = supabase.from('doctors').select('id', { count: 'exact', head: true });
-      const hospitalsPromise = supabase.from('hospitals').select('id', { count: 'exact', head: true });
-      const shopsPromise = supabase.from('medical_shops').select('id', { count: 'exact', head: true });
-      const labsPromise = supabase.from('pathology_labs').select('id', { count: 'exact', head: true });
-
-      const [doctorsResult, hospitalsResult, shopsResult, labsResult] = await Promise.all([
-        doctorsPromise,
-        hospitalsPromise,
-        shopsPromise,
-        labsPromise
+      const [
+        doctorsData,
+        shopsData,
+        labsData,
+        hospitalsData,
+        contactData
+      ] = await Promise.all([
+        supabase.from('doctors').select('count'),
+        supabase.from('medical_shops').select('count'),
+        supabase.from('labs').select('count'),
+        supabase.from('hospitals').select('count'),
+        supabase.from('contact_messages').select('count')
       ]);
 
       setStats({
-        doctors: doctorsResult.count || 0,
-        hospitals: hospitalsResult.count || 0,
-        medicalShops: shopsResult.count || 0,
-        pathologyLabs: labsResult.count || 0,
+        doctors: doctorsData.count || 0,
+        medicalShops: shopsData.count || 0,
+        labs: labsData.count || 0,
+        hospitals: hospitalsData.count || 0,
+        contactMessages: contactData.count || 0,
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
     }
   };
 
+  const dashboardCards = [
+    {
+      title: "Doctors",
+      count: stats.doctors,
+      description: "Total registered doctors",
+      icon: <Users className="h-12 w-12 text-blue-600 dark:text-blue-400" />,
+      link: "/admin/doctors",
+      color: "bg-blue-50 dark:bg-blue-950",
+      gradientFrom: "from-blue-600",
+      gradientTo: "to-indigo-600",
+    },
+    {
+      title: "Medical Shops",
+      count: stats.medicalShops,
+      description: "Total registered medical shops",
+      icon: <Store className="h-12 w-12 text-green-600 dark:text-green-400" />,
+      link: "/admin/medical-shops",
+      color: "bg-green-50 dark:bg-green-950",
+      gradientFrom: "from-green-600",
+      gradientTo: "to-teal-600",
+    },
+    {
+      title: "Laboratories",
+      count: stats.labs,
+      description: "Total registered labs",
+      icon: <Flask className="h-12 w-12 text-purple-600 dark:text-purple-400" />,
+      link: "/admin/labs",
+      color: "bg-purple-50 dark:bg-purple-950",
+      gradientFrom: "from-purple-600",
+      gradientTo: "to-pink-600",
+    },
+    {
+      title: "Hospitals",
+      count: stats.hospitals,
+      description: "Total registered hospitals",
+      icon: <Building2 className="h-12 w-12 text-red-600 dark:text-red-400" />,
+      link: "/admin/hospitals",
+      color: "bg-red-50 dark:bg-red-950",
+      gradientFrom: "from-red-600",
+      gradientTo: "to-orange-600",
+    },
+    {
+      title: "Contact Messages",
+      count: stats.contactMessages,
+      description: "Total contact inquiries",
+      icon: <MessageSquare className="h-12 w-12 text-amber-600 dark:text-amber-400" />,
+      link: "/admin/contact",
+      color: "bg-amber-50 dark:bg-amber-950",
+      gradientFrom: "from-amber-600",
+      gradientTo: "to-yellow-600",
+    },
+  ];
+
+  const quickActions = [
+    {
+      title: "Add Doctor",
+      icon: <UserCheck className="h-5 w-5" />,
+      link: "/admin/doctors",
+      color: "bg-blue-600 hover:bg-blue-700 text-white",
+    },
+    {
+      title: "Add Medical Shop",
+      icon: <Store className="h-5 w-5" />,
+      link: "/admin/medical-shops",
+      color: "bg-green-600 hover:bg-green-700 text-white",
+    },
+    {
+      title: "Add Lab",
+      icon: <Flask className="h-5 w-5" />,
+      link: "/admin/labs",
+      color: "bg-purple-600 hover:bg-purple-700 text-white",
+    },
+    {
+      title: "Add Hospital",
+      icon: <Building2 className="h-5 w-5" />,
+      link: "/admin/hospitals",
+      color: "bg-red-600 hover:bg-red-700 text-white",
+    },
+  ];
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-      </div>
+      <AdminLayout title="Admin Dashboard">
+        <div className="flex items-center justify-center h-[70vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        </div>
+      </AdminLayout>
     );
   }
 
   if (!isAdmin) {
-    return null; // This will be redirected by the useEffect
+    return null; // Will be redirected by useEffect
   }
 
   return (
-    <AdminLayout title="Dashboard">
+    <AdminLayout title="Admin Dashboard">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-gray-600 dark:text-gray-300 mb-8">
-          Welcome to the admin dashboard. Here you can manage all aspects of your healthcare platform.
-        </p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-gray-800 dark:text-gray-100">
+            Welcome to Admin Dashboard
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
+            Manage your healthcare provider network from one central location
+          </p>
+        </div>
 
-        {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-          <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium">Doctors</CardTitle>
-                <Stethoscope className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.doctors}</div>
-              <CardDescription>Total registered doctors</CardDescription>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-4 w-full border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                onClick={() => navigate('/admin/doctors')}
-              >
-                Manage Doctors
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="mb-8">
+          <h2 className="text-xl font-medium text-gray-800 dark:text-gray-100 mb-4">
+            Quick Actions
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => (
+              <Link to={action.link} key={index}>
+                <Button
+                  className={`w-full justify-start gap-2 ${action.color}`}
+                  onClick={() => navigate(action.link)}
+                >
+                  {action.icon}
+                  <span className={isMobile ? "hidden" : "block"}>{action.title}</span>
+                </Button>
+              </Link>
+            ))}
+          </div>
+        </div>
 
-          <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium">Hospitals</CardTitle>
-                <Building className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.hospitals}</div>
-              <CardDescription>Total registered hospitals</CardDescription>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-4 w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
-                onClick={() => navigate('/admin/hospitals')}
+        <div className="mb-8">
+          <h2 className="text-xl font-medium text-gray-800 dark:text-gray-100 mb-4">
+            Overview
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dashboardCards.map((card, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                Manage Hospitals
-              </Button>
-            </CardContent>
-          </Card>
+                <Link to={card.link}>
+                  <Card className={`overflow-hidden hover:shadow-md transition-all duration-300 ${card.color} border border-gray-200 dark:border-gray-700`}>
+                    <div className="absolute inset-0 opacity-5 bg-gradient-to-r from-transparent via-white to-transparent"></div>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-xl font-bold">
+                            {card.title}
+                          </CardTitle>
+                          <CardDescription>
+                            {card.description}
+                          </CardDescription>
+                        </div>
+                        <div className="rounded-md p-2">
+                          {card.icon}
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-3xl font-bold">{card.count}</p>
+                    </CardContent>
+                    <CardFooter className="pt-0">
+                      <div className="text-xs inline-flex items-center font-medium">
+                        <TrendingUp className="h-4 w-4 mr-1" />
+                        View Details
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
-          <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium">Medical Shops</CardTitle>
-                <Store className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-              </div>
+        <div className="mb-8">
+          <h2 className="text-xl font-medium text-gray-800 dark:text-gray-100 mb-4">
+            Recent Activity
+          </h2>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Activity Log</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.medicalShops}</div>
-              <CardDescription>Total registered shops</CardDescription>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-4 w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
-                onClick={() => navigate('/admin/medical-shops')}
-              >
-                Manage Shops
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-medium">Labs</CardTitle>
-                <Microscope className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <CardContent className="text-sm">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-full">
+                    <UserCheck className="h-4 w-4 text-blue-600 dark:text-blue-300" />
+                  </div>
+                  <div>
+                    <p className="font-medium">New doctor added</p>
+                    <p className="text-gray-500 dark:text-gray-400">30 minutes ago</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-green-100 dark:bg-green-900 p-2 rounded-full">
+                    <Store className="h-4 w-4 text-green-600 dark:text-green-300" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Medical shop updated</p>
+                    <p className="text-gray-500 dark:text-gray-400">2 hours ago</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-red-100 dark:bg-red-900 p-2 rounded-full">
+                    <CalendarDays className="h-4 w-4 text-red-600 dark:text-red-300" />
+                  </div>
+                  <div>
+                    <p className="font-medium">3 New contact messages</p>
+                    <p className="text-gray-500 dark:text-gray-400">Yesterday</p>
+                  </div>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.pathologyLabs}</div>
-              <CardDescription>Total registered labs</CardDescription>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-4 w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-900/50"
-                onClick={() => navigate('/admin/labs')}
-              >
-                Manage Labs
-              </Button>
             </CardContent>
           </Card>
         </div>
-
-        {/* Management Tabs */}
-        <Tabs defaultValue="quick-actions" className="mt-6">
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 bg-transparent">
-            <TabsTrigger value="quick-actions" className="bg-white dark:bg-gray-800 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900/50 data-[state=active]:text-blue-800 dark:data-[state=active]:text-blue-100">
-              Quick Actions
-            </TabsTrigger>
-            <TabsTrigger value="doctors" className="bg-white dark:bg-gray-800 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900/50 data-[state=active]:text-blue-800 dark:data-[state=active]:text-blue-100">
-              Doctors
-            </TabsTrigger>
-            <TabsTrigger value="hospitals" className="bg-white dark:bg-gray-800 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900/50 data-[state=active]:text-blue-800 dark:data-[state=active]:text-blue-100">
-              Hospitals
-            </TabsTrigger>
-            <TabsTrigger value="medical-shops" className="bg-white dark:bg-gray-800 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900/50 data-[state=active]:text-blue-800 dark:data-[state=active]:text-blue-100">
-              Medical Shops
-            </TabsTrigger>
-            <TabsTrigger value="labs" className="bg-white dark:bg-gray-800 data-[state=active]:bg-blue-100 dark:data-[state=active]:bg-blue-900/50 data-[state=active]:text-blue-800 dark:data-[state=active]:text-blue-100">
-              Pathology Labs
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Quick Actions Tab */}
-          <TabsContent value="quick-actions" className="mt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-2">
-                    <Stethoscope className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    <CardTitle className="text-lg">Add New Doctor</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    Create a new doctor profile with specialties and contact information.
-                  </p>
-                  <Button 
-                    onClick={() => navigate('/admin/doctors')}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600"
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add Doctor
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-2">
-                    <Building className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                    <CardTitle className="text-lg">Add Hospital</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    Add a new hospital with facilities and specialty information.
-                  </p>
-                  <Button 
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-700 dark:hover:bg-indigo-600"
-                    onClick={() => navigate('/admin/hospitals')}
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add Hospital
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-2">
-                    <Store className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                    <CardTitle className="text-lg">Add Medical Shop</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    Create a new medical shop profile with services and contact details.
-                  </p>
-                  <Button 
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600"
-                    onClick={() => navigate('/admin/medical-shops')}
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add Medical Shop
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-2">
-                    <Microscope className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                    <CardTitle className="text-lg">Add Pathology Lab</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    Add a new pathology lab with test offerings and contact information.
-                  </p>
-                  <Button 
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-700 dark:hover:bg-purple-600"
-                    onClick={() => navigate('/admin/labs')}
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add Pathology Lab
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Other tabs content remaining the same */}
-          <TabsContent value="doctors" className="mt-6">
-            <Card className="bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-xl">Manage Doctors</CardTitle>
-                  <Button 
-                    onClick={() => navigate('/admin/doctors')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600"
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add New Doctor
-                  </Button>
-                </div>
-                <CardDescription>
-                  Add, edit or remove doctor profiles
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Separator className="my-4" />
-                <div className="text-center py-10">
-                  <Button 
-                    onClick={() => navigate('/admin/doctors')}
-                    variant="outline" 
-                    className="px-8"
-                  >
-                    Go to Doctor Management
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="hospitals" className="mt-6">
-            <Card className="bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-xl">Manage Hospitals</CardTitle>
-                  <Button 
-                    onClick={() => navigate('/admin/hospitals')}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-700 dark:hover:bg-indigo-600"
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add New Hospital
-                  </Button>
-                </div>
-                <CardDescription>
-                  Add, edit or remove hospital profiles
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Separator className="my-4" />
-                <div className="text-center py-10">
-                  <Button 
-                    onClick={() => navigate('/admin/hospitals')}
-                    variant="outline" 
-                    className="px-8"
-                  >
-                    Go to Hospital Management
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="medical-shops" className="mt-6">
-            <Card className="bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-xl">Manage Medical Shops</CardTitle>
-                  <Button 
-                    onClick={() => navigate('/admin/medical-shops')}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600"
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add New Medical Shop
-                  </Button>
-                </div>
-                <CardDescription>
-                  Add, edit or remove medical shop profiles
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Separator className="my-4" />
-                <div className="text-center py-10">
-                  <Button 
-                    onClick={() => navigate('/admin/medical-shops')}
-                    variant="outline" 
-                    className="px-8"
-                  >
-                    Go to Medical Shop Management
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="labs" className="mt-6">
-            <Card className="bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-xl">Manage Pathology Labs</CardTitle>
-                  <Button 
-                    onClick={() => navigate('/admin/labs')}
-                    className="bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-700 dark:hover:bg-purple-600"
-                  >
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add New Pathology Lab
-                  </Button>
-                </div>
-                <CardDescription>
-                  Add, edit or remove pathology lab profiles
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Separator className="my-4" />
-                <div className="text-center py-10">
-                  <Button 
-                    onClick={() => navigate('/admin/labs')}
-                    variant="outline" 
-                    className="px-8"
-                  >
-                    Go to Pathology Lab Management
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </motion.div>
     </AdminLayout>
   );

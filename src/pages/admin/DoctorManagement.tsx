@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -15,6 +15,7 @@ import { Trash2, Edit, Plus, Search } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Doctor {
   id: string;
@@ -40,6 +41,7 @@ interface Category {
 
 const DoctorManagement: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -281,11 +283,13 @@ const DoctorManagement: React.FC = () => {
       
       // Refresh the doctors list
       await fetchDoctors();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving doctor:", error);
       toast({
         title: "Error",
-        description: isEditMode ? "Failed to update doctor" : "Failed to add doctor",
+        description: isEditMode 
+          ? `Failed to update doctor: ${error.message}` 
+          : `Failed to add doctor: ${error.message}`,
         variant: "destructive",
       });
     }
@@ -318,11 +322,11 @@ const DoctorManagement: React.FC = () => {
       
       // Refresh the doctors list
       await fetchDoctors();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting doctor:", error);
       toast({
         title: "Error",
-        description: "Failed to delete doctor",
+        description: `Failed to delete doctor: ${error.message}`,
         variant: "destructive",
       });
     }
@@ -330,9 +334,11 @@ const DoctorManagement: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-      </div>
+      <AdminLayout title="Doctor Management">
+        <div className="flex items-center justify-center h-[70vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        </div>
+      </AdminLayout>
     );
   }
 
@@ -448,7 +454,7 @@ const DoctorManagement: React.FC = () => {
 
       {/* Add/Edit Doctor Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className={`${isMobile ? 'w-[95%]' : 'max-w-3xl'} max-h-[90vh] overflow-y-auto`}>
           <DialogHeader>
             <DialogTitle className="text-xl">{isEditMode ? 'Edit Doctor' : 'Add New Doctor'}</DialogTitle>
           </DialogHeader>
