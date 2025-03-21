@@ -34,10 +34,7 @@ export const createAdminUser = async (email: string, password: string) => {
         return { success: false, message: 'Failed to login as admin user' };
       }
       
-      toast({
-        title: "Admin Login Successful",
-        description: "Welcome back to the admin dashboard!",
-      });
+      console.log('Admin login successful');
       
       return { success: true, message: 'Admin login successful', user: data.user };
     }
@@ -69,10 +66,7 @@ export const createAdminUser = async (email: string, password: string) => {
       return { success: false, message: updateError.message };
     }
 
-    toast({
-      title: "Admin Account Created",
-      description: "Your admin account has been created successfully.",
-    });
+    console.log('Admin user created successfully');
 
     return { 
       success: true, 

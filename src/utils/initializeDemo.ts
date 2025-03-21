@@ -33,29 +33,9 @@ export const initializeDemo = async () => {
       }
     }
     
-    // Create or login as demo admin user
-    const result = await createAdminUser("admin@gmail.com", "123456");
-    
-    if (result.success) {
-      toast({
-        title: "Admin Access Granted",
-        description: result.message,
-      });
-      
-      // Wait a moment before redirecting to ensure toast is visible
-      setTimeout(() => {
-        // Redirect to admin page after successful login
-        window.location.href = "/admin";
-      }, 1000);
-    } else {
-      toast({
-        title: "Failed to Access Admin Dashboard",
-        description: result.message,
-        variant: "destructive",
-      });
-    }
-    
-    return result;
+    // Redirect to dedicated admin login page
+    window.location.href = "/admin/login";
+    return { success: true, message: "Redirecting to admin login" };
   } catch (error) {
     console.error("Error in initializeDemo:", error);
     toast({

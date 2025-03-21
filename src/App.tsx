@@ -17,6 +17,7 @@ import DoctorManagement from "./pages/admin/DoctorManagement";
 import MedicalShopManagement from "./pages/admin/MedicalShopManagement";
 import LabManagement from "./pages/admin/LabManagement";
 import HospitalManagement from "./pages/admin/HospitalManagement";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/hospitals" element={<HospitalsPage />} />
               
               {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/doctors" element={<DoctorManagement />} />
               <Route path="/admin/medical-shops" element={<MedicalShopManagement />} />
