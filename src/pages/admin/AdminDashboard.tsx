@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +9,7 @@ import { toast } from "@/components/ui/use-toast";
 import {
   Users,
   Store,
-  Flask,
+  Microscope,
   Building2,
   MessageSquare,
   TrendingUp,
@@ -93,21 +92,22 @@ const AdminDashboard: React.FC = () => {
         shopsData,
         labsData,
         hospitalsData,
-        contactData
       ] = await Promise.all([
         supabase.from('doctors').select('count'),
         supabase.from('medical_shops').select('count'),
-        supabase.from('labs').select('count'),
-        supabase.from('hospitals').select('count'),
-        supabase.from('contact_messages').select('count')
+        supabase.from('pathology_labs').select('count'),
+        supabase.from('hospitals').select('count')
       ]);
+
+      // Set a default value for contact messages since the table might not exist yet
+      const contactMessages = 0;
 
       setStats({
         doctors: doctorsData.count || 0,
         medicalShops: shopsData.count || 0,
         labs: labsData.count || 0,
         hospitals: hospitalsData.count || 0,
-        contactMessages: contactData.count || 0,
+        contactMessages: contactMessages,
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -139,7 +139,7 @@ const AdminDashboard: React.FC = () => {
       title: "Laboratories",
       count: stats.labs,
       description: "Total registered labs",
-      icon: <Flask className="h-12 w-12 text-purple-600 dark:text-purple-400" />,
+      icon: <Microscope className="h-12 w-12 text-purple-600 dark:text-purple-400" />,
       link: "/admin/labs",
       color: "bg-purple-50 dark:bg-purple-950",
       gradientFrom: "from-purple-600",
@@ -154,16 +154,6 @@ const AdminDashboard: React.FC = () => {
       color: "bg-red-50 dark:bg-red-950",
       gradientFrom: "from-red-600",
       gradientTo: "to-orange-600",
-    },
-    {
-      title: "Contact Messages",
-      count: stats.contactMessages,
-      description: "Total contact inquiries",
-      icon: <MessageSquare className="h-12 w-12 text-amber-600 dark:text-amber-400" />,
-      link: "/admin/contact",
-      color: "bg-amber-50 dark:bg-amber-950",
-      gradientFrom: "from-amber-600",
-      gradientTo: "to-yellow-600",
     },
   ];
 
@@ -182,7 +172,7 @@ const AdminDashboard: React.FC = () => {
     },
     {
       title: "Add Lab",
-      icon: <Flask className="h-5 w-5" />,
+      icon: <Microscope className="h-5 w-5" />,
       link: "/admin/labs",
       color: "bg-purple-600 hover:bg-purple-700 text-white",
     },
