@@ -126,7 +126,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className={`max-w-md ${isMobile ? 'max-h-[90vh] overflow-y-auto p-4' : ''}`}>
+      <DialogContent className="max-w-md sm:max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="text-xl text-center">{activeTab === "login" ? "Login" : "Sign Up"}</DialogTitle>
           <DialogDescription className="text-center">

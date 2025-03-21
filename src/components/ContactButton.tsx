@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { MessageCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
@@ -62,10 +62,10 @@ const ContactButton = () => {
     <>
       <Button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-lg p-0 bg-primary hover:bg-primary/90 text-primary-foreground z-50"
+        className="fixed bottom-6 right-6 shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground z-50 px-6 py-3"
         aria-label="Contact Us"
       >
-        <MessageCircle className="h-6 w-6" />
+        Contact Us
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -65,8 +65,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      {/* Admin Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30">
+      {/* Admin Header - Now fixed */}
+      <header className="bg-white dark:bg-gray-800 shadow-sm fixed top-0 left-0 right-0 z-30">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Button 
@@ -98,14 +98,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+      {/* Add padding for fixed header */}
+      <div className="pt-16 flex flex-1 overflow-hidden">
+        {/* Sidebar - Fixed position but below the header */}
         <aside 
-          className={`fixed md:static inset-y-0 left-0 transform z-20 w-64 bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 ease-in-out md:translate-x-0 ${
+          className={`fixed md:sticky top-16 left-0 z-20 w-64 bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 ease-in-out md:translate-x-0 h-[calc(100vh-64px)] ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } flex-shrink-0 mt-[53px] md:mt-0 h-[calc(100vh-53px)] md:h-auto overflow-y-auto`}
+          } flex-shrink-0 overflow-y-auto`}
         >
-          <nav className="py-4 px-3">
+          <nav className="py-4 px-3 h-full">
             <div className="space-y-1">
               {navItems.map((item) => (
                 <Link
@@ -139,7 +140,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
           </nav>
         </aside>
 
-        {/* Main content */}
+        {/* Main content - Adjusted with padding to accommodate fixed header */}
         <div className={`flex-1 overflow-auto p-4 md:p-8 ${sidebarOpen && isMobile ? 'opacity-50' : 'opacity-100'}`}>
           {title && (
             <div className="mb-6">
@@ -153,7 +154,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
       {/* Overlay for mobile */}
       {sidebarOpen && isMobile && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10 mt-16"
           onClick={toggleSidebar}
         />
       )}
