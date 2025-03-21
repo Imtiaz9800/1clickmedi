@@ -2,6 +2,7 @@
 import React, { ReactNode } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import ContactButton from "./ContactButton";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface LayoutProps {
@@ -23,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </motion.main>
       </AnimatePresence>
+      <ContactButton />
       <Footer />
     </div>
   );

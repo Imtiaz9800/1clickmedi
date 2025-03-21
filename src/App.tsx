@@ -17,6 +17,7 @@ import DoctorManagement from "./pages/admin/DoctorManagement";
 import MedicalShopManagement from "./pages/admin/MedicalShopManagement";
 import LabManagement from "./pages/admin/LabManagement";
 import HospitalManagement from "./pages/admin/HospitalManagement";
+import ContactManagement from "./pages/admin/ContactManagement";
 import AdminLogin from "./pages/admin/AdminLogin";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/admin/medical-shops" element={<MedicalShopManagement />} />
               <Route path="/admin/labs" element={<LabManagement />} />
               <Route path="/admin/hospitals" element={<HospitalManagement />} />
+              <Route path="/admin/contact" element={<ContactManagement />} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
