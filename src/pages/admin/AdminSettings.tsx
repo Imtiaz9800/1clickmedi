@@ -51,14 +51,19 @@ const AdminSettings = () => {
         // Fetch profile data
         const { data: profileData, error } = await supabase
           .from("profiles")
-          .select("email, full_name, phone")
+          .select("email, first_name, last_name, phone, role")
           .eq("id", session.user.id)
           .single();
 
         if (profileData) {
+          // Combine first_name and last_name into a single name field
+          const fullName = [profileData.first_name, profileData.last_name]
+            .filter(Boolean)
+            .join(" ");
+            
           setProfile({
             email: profileData.email || session.user.email || "",
-            name: profileData.full_name || "",
+            name: fullName || "",
             phone: profileData.phone || "",
           });
         } else if (error) {
@@ -87,10 +92,16 @@ const AdminSettings = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      // Split the full name into first_name and last_name
+      const nameParts = profile.name.trim().split(/\s+/);
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || null;
+
       const { error } = await supabase
         .from("profiles")
         .update({
-          full_name: profile.name,
+          first_name: firstName,
+          last_name: lastName,
           phone: profile.phone,
         })
         .eq("id", session.user.id);
