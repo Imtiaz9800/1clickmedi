@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState("login");
+  const [defaultState, setDefaultState] = useState<'login' | 'signup'>('login');
   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
@@ -75,12 +75,12 @@ const Navbar: React.FC = () => {
   }, []);
 
   const handleLoginClick = () => {
-    setActiveTab("login");
+    setDefaultState('login');
     setAuthModalOpen(true);
   };
 
   const handleSignupClick = () => {
-    setActiveTab("signup");
+    setDefaultState('signup');
     setAuthModalOpen(true);
   };
 
@@ -146,10 +146,8 @@ const Navbar: React.FC = () => {
 
       <AuthModal
         isOpen={authModalOpen}
-        onOpenChange={setAuthModalOpen}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        setIsLoggedIn={setIsLoggedIn}
+        onClose={() => setAuthModalOpen(false)}
+        defaultState={defaultState}
       />
     </>
   );
