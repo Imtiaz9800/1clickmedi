@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 
-const ContactButton = () => {
+interface ContactButtonProps {
+  variant?: "default" | "primary";
+}
+
+const ContactButton: React.FC<ContactButtonProps> = ({ variant = "default" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -58,12 +61,15 @@ const ContactButton = () => {
     }
   };
 
+  const handleModal = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <>
       <Button 
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground z-50 px-6 py-3"
-        aria-label="Contact Us"
+        onClick={handleModal} 
+        className={variant === "default" ? "bg-blue-600 hover:bg-blue-700" : ""}
       >
         Contact Us
       </Button>

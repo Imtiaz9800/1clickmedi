@@ -28,7 +28,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ actions }) => {
               className={`w-full justify-start gap-2 ${action.color}`}
             >
               {action.icon}
-              <span className={action.isMobile ? "hidden" : "block"}>{action.title}</span>
+              <span className={action.isMobile ? "hidden md:inline" : ""}>{action.title}</span>
             </Button>
           </Link>
         ))}

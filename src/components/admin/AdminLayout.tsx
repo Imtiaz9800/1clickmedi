@@ -16,7 +16,6 @@ import {
   ChevronRight,
   MessageCircle,
   Settings,
-  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -65,7 +64,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      {/* Admin Header - Now fixed */}
+      {/* Admin Header - Fixed position */}
       <header className="bg-white dark:bg-gray-800 shadow-sm fixed top-0 left-0 right-0 z-30">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -100,7 +99,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
 
       {/* Add padding for fixed header */}
       <div className="pt-16 flex flex-1 overflow-hidden">
-        {/* Sidebar - Fixed position but below the header */}
+        {/* Sidebar - Fixed position below the header */}
         <aside 
           className={`fixed md:sticky top-16 left-0 z-20 w-64 bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 ease-in-out md:translate-x-0 h-[calc(100vh-64px)] ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
