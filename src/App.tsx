@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,7 @@ import LabManagement from "./pages/admin/LabManagement";
 import HospitalManagement from "./pages/admin/HospitalManagement";
 import ContactManagement from "./pages/admin/ContactManagement";
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminSettings from "./pages/admin/AdminSettings";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -132,6 +132,14 @@ const App = () => (
                 element={
                   <AdminRoute>
                     <ContactManagement />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/settings" 
+                element={
+                  <AdminRoute>
+                    <AdminSettings />
                   </AdminRoute>
                 } 
               />
