@@ -147,7 +147,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
         </aside>
 
         {/* Main content - Adjusted with padding to accommodate fixed header */}
-        <div className={`flex-1 overflow-auto p-4 md:p-8 ${sidebarOpen && isMobile ? 'opacity-50' : 'opacity-100'}`}>
+        <div className={`flex-1 overflow-auto p-4 m-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm ${sidebarOpen && isMobile ? 'opacity-50' : 'opacity-100'}`}>
           {title && (
             <div className="mb-6">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{title}</h1>
