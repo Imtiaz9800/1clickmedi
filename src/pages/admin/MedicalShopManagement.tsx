@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminDataTable, { DataColumn } from "@/components/admin/shared/AdminDataTable";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import MedicalShopForm, { MedicalShopFormData } from "@/components/admin/forms/MedicalShopForm";
+import { useToast } from "@/hooks/use-toast";
 
 interface MedicalShop {
   id: string;
@@ -16,7 +19,7 @@ interface MedicalShop {
 }
 
 const MedicalShopManagement = () => {
-  // Sample data - would typically come from an API
+  const { toast } = useToast();
   const [shops, setShops] = useState<MedicalShop[]>([
     {
       id: "1",
@@ -30,6 +33,10 @@ const MedicalShopManagement = () => {
       rating: 4.7
     }
   ]);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentShop, setCurrentShop] = useState<MedicalShop | undefined>(undefined);
+  const [isEditing, setIsEditing] = useState(false);
 
   const columns: DataColumn[] = [
     {
@@ -79,28 +86,61 @@ const MedicalShopManagement = () => {
   ];
 
   const handleAddShop = () => {
-    const newShop: MedicalShop = {
-      id: `${shops.length + 1}`,
-      name: `New Medical Shop ${shops.length + 1}`,
-      location: "New Location",
-      contact: {
-        phone: "+91-9876543210",
-        email: "newshop@example.com"
-      },
-      services: ["General Service"],
-      rating: 4.0
-    };
-    
-    setShops([...shops, newShop]);
+    setCurrentShop(undefined);
+    setIsEditing(false);
+    setIsDialogOpen(true);
   };
 
   const handleEditShop = (shop: MedicalShop) => {
-    // Implementation for editing a shop would go here
-    console.log("Edit medical shop", shop);
+    setCurrentShop(shop);
+    setIsEditing(true);
+    setIsDialogOpen(true);
   };
 
   const handleDeleteShop = (shop: MedicalShop) => {
     setShops(shops.filter(item => item.id !== shop.id));
+    toast({
+      title: "Medical shop removed",
+      description: `${shop.name} has been removed from the database.`,
+    });
+  };
+
+  const handleFormSubmit = (data: MedicalShopFormData) => {
+    if (isEditing && currentShop) {
+      // Update existing shop
+      setShops(shops.map(shop => 
+        shop.id === currentShop.id 
+          ? {
+              ...shop,
+              name: data.name,
+              location: data.location,
+              contact: {
+                phone: data.phone,
+                email: data.email
+              },
+              services: data.services,
+              rating: data.rating
+            } 
+          : shop
+      ));
+    } else {
+      // Add new shop
+      const newShop: MedicalShop = {
+        id: `${shops.length + 1}`,
+        name: data.name,
+        location: data.location,
+        contact: {
+          phone: data.phone,
+          email: data.email
+        },
+        services: data.services,
+        rating: data.rating
+      };
+      
+      setShops([...shops, newShop]);
+    }
+    
+    setIsDialogOpen(false);
   };
 
   return (
@@ -116,6 +156,33 @@ const MedicalShopManagement = () => {
         onEdit={handleEditShop}
         onDelete={handleDeleteShop}
       />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {isEditing ? "Edit Medical Shop" : "Add New Medical Shop"}
+            </DialogTitle>
+          </DialogHeader>
+          <MedicalShopForm
+            initialData={
+              currentShop
+                ? {
+                    id: currentShop.id,
+                    name: currentShop.name,
+                    location: currentShop.location,
+                    phone: currentShop.contact.phone,
+                    email: currentShop.contact.email,
+                    services: currentShop.services,
+                    rating: currentShop.rating
+                  }
+                : undefined
+            }
+            onSubmit={handleFormSubmit}
+            onCancel={() => setIsDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

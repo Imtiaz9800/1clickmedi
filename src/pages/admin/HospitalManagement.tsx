@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminDataTable, { DataColumn } from "@/components/admin/shared/AdminDataTable";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import HospitalForm, { HospitalFormData } from "@/components/admin/forms/HospitalForm";
+import { useToast } from "@/hooks/use-toast";
 
 interface Hospital {
   id: string;
@@ -16,7 +19,7 @@ interface Hospital {
 }
 
 const HospitalManagement = () => {
-  // Sample data - would typically come from an API
+  const { toast } = useToast();
   const [hospitals, setHospitals] = useState<Hospital[]>([
     {
       id: "1",
@@ -30,6 +33,10 @@ const HospitalManagement = () => {
       rating: 4.8
     }
   ]);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentHospital, setCurrentHospital] = useState<Hospital | undefined>(undefined);
+  const [isEditing, setIsEditing] = useState(false);
 
   const columns: DataColumn[] = [
     {
@@ -79,28 +86,61 @@ const HospitalManagement = () => {
   ];
 
   const handleAddHospital = () => {
-    const newHospital: Hospital = {
-      id: `${hospitals.length + 1}`,
-      name: `New Hospital ${hospitals.length + 1}`,
-      location: "New Location",
-      contact: {
-        phone: "+91-9876543210",
-        email: "newhospital@example.com"
-      },
-      specialties: ["General Medicine"],
-      rating: 4.0
-    };
-    
-    setHospitals([...hospitals, newHospital]);
+    setCurrentHospital(undefined);
+    setIsEditing(false);
+    setIsDialogOpen(true);
   };
 
   const handleEditHospital = (hospital: Hospital) => {
-    // Implementation for editing a hospital would go here
-    console.log("Edit hospital", hospital);
+    setCurrentHospital(hospital);
+    setIsEditing(true);
+    setIsDialogOpen(true);
   };
 
   const handleDeleteHospital = (hospital: Hospital) => {
     setHospitals(hospitals.filter(item => item.id !== hospital.id));
+    toast({
+      title: "Hospital removed",
+      description: `${hospital.name} has been removed from the database.`,
+    });
+  };
+
+  const handleFormSubmit = (data: HospitalFormData) => {
+    if (isEditing && currentHospital) {
+      // Update existing hospital
+      setHospitals(hospitals.map(hospital => 
+        hospital.id === currentHospital.id 
+          ? {
+              ...hospital,
+              name: data.name,
+              location: data.location,
+              contact: {
+                phone: data.phone,
+                email: data.email
+              },
+              specialties: data.specialties,
+              rating: data.rating
+            } 
+          : hospital
+      ));
+    } else {
+      // Add new hospital
+      const newHospital: Hospital = {
+        id: `${hospitals.length + 1}`,
+        name: data.name,
+        location: data.location,
+        contact: {
+          phone: data.phone,
+          email: data.email
+        },
+        specialties: data.specialties,
+        rating: data.rating
+      };
+      
+      setHospitals([...hospitals, newHospital]);
+    }
+    
+    setIsDialogOpen(false);
   };
 
   return (
@@ -116,6 +156,33 @@ const HospitalManagement = () => {
         onEdit={handleEditHospital}
         onDelete={handleDeleteHospital}
       />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {isEditing ? "Edit Hospital" : "Add New Hospital"}
+            </DialogTitle>
+          </DialogHeader>
+          <HospitalForm
+            initialData={
+              currentHospital
+                ? {
+                    id: currentHospital.id,
+                    name: currentHospital.name,
+                    location: currentHospital.location,
+                    phone: currentHospital.contact.phone,
+                    email: currentHospital.contact.email,
+                    specialties: currentHospital.specialties,
+                    rating: currentHospital.rating
+                  }
+                : undefined
+            }
+            onSubmit={handleFormSubmit}
+            onCancel={() => setIsDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

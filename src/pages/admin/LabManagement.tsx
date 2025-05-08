@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminDataTable, { DataColumn } from "@/components/admin/shared/AdminDataTable";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import LabForm, { LabFormData } from "@/components/admin/forms/LabForm";
+import { useToast } from "@/hooks/use-toast";
 
 interface Lab {
   id: string;
@@ -16,7 +19,7 @@ interface Lab {
 }
 
 const LabManagement = () => {
-  // Sample data - would typically come from an API
+  const { toast } = useToast();
   const [labs, setLabs] = useState<Lab[]>([
     {
       id: "1",
@@ -30,6 +33,10 @@ const LabManagement = () => {
       rating: 4.5
     }
   ]);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentLab, setCurrentLab] = useState<Lab | undefined>(undefined);
+  const [isEditing, setIsEditing] = useState(false);
 
   const columns: DataColumn[] = [
     {
@@ -79,28 +86,61 @@ const LabManagement = () => {
   ];
 
   const handleAddLab = () => {
-    const newLab: Lab = {
-      id: `${labs.length + 1}`,
-      name: `New Lab ${labs.length + 1}`,
-      location: "New Location",
-      contact: {
-        phone: "+91-9876543210",
-        email: "newlab@example.com"
-      },
-      tests: ["General Test"],
-      rating: 4.0
-    };
-    
-    setLabs([...labs, newLab]);
+    setCurrentLab(undefined);
+    setIsEditing(false);
+    setIsDialogOpen(true);
   };
 
   const handleEditLab = (lab: Lab) => {
-    // Implementation for editing a lab would go here
-    console.log("Edit lab", lab);
+    setCurrentLab(lab);
+    setIsEditing(true);
+    setIsDialogOpen(true);
   };
 
   const handleDeleteLab = (lab: Lab) => {
     setLabs(labs.filter(item => item.id !== lab.id));
+    toast({
+      title: "Lab removed",
+      description: `${lab.name} has been removed from the database.`,
+    });
+  };
+
+  const handleFormSubmit = (data: LabFormData) => {
+    if (isEditing && currentLab) {
+      // Update existing lab
+      setLabs(labs.map(lab => 
+        lab.id === currentLab.id 
+          ? {
+              ...lab,
+              name: data.name,
+              location: data.location,
+              contact: {
+                phone: data.phone,
+                email: data.email
+              },
+              tests: data.tests,
+              rating: data.rating
+            } 
+          : lab
+      ));
+    } else {
+      // Add new lab
+      const newLab: Lab = {
+        id: `${labs.length + 1}`,
+        name: data.name,
+        location: data.location,
+        contact: {
+          phone: data.phone,
+          email: data.email
+        },
+        tests: data.tests,
+        rating: data.rating
+      };
+      
+      setLabs([...labs, newLab]);
+    }
+    
+    setIsDialogOpen(false);
   };
 
   return (
@@ -116,6 +156,33 @@ const LabManagement = () => {
         onEdit={handleEditLab}
         onDelete={handleDeleteLab}
       />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {isEditing ? "Edit Lab" : "Add New Lab"}
+            </DialogTitle>
+          </DialogHeader>
+          <LabForm
+            initialData={
+              currentLab
+                ? {
+                    id: currentLab.id,
+                    name: currentLab.name,
+                    location: currentLab.location,
+                    phone: currentLab.contact.phone,
+                    email: currentLab.contact.email,
+                    tests: currentLab.tests,
+                    rating: currentLab.rating
+                  }
+                : undefined
+            }
+            onSubmit={handleFormSubmit}
+            onCancel={() => setIsDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
