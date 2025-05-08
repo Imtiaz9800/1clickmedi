@@ -99,15 +99,15 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 w-full max-w-md mx-auto">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel className="text-foreground">Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter medical shop name" {...field} />
+                <Input placeholder="Enter medical shop name" {...field} className="bg-background text-foreground" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -119,9 +119,9 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Location</FormLabel>
+              <FormLabel className="text-foreground">Location</FormLabel>
               <FormControl>
-                <Input placeholder="Enter location" {...field} />
+                <Input placeholder="Enter location" {...field} className="bg-background text-foreground" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -134,9 +134,9 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel className="text-foreground">Phone</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter phone number" {...field} />
+                  <Input placeholder="Enter phone number" {...field} className="bg-background text-foreground" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -148,9 +148,9 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-foreground">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter email address" {...field} />
+                  <Input placeholder="Enter email address" {...field} className="bg-background text-foreground" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -163,11 +163,12 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
           name="services"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Services</FormLabel>
+              <FormLabel className="text-foreground">Services</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Enter services (comma-separated)"
                   {...field}
+                  className="bg-background text-foreground"
                 />
               </FormControl>
               <FormMessage />
@@ -180,9 +181,9 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
           name="rating"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Rating (0-5)</FormLabel>
+              <FormLabel className="text-foreground">Rating (0-5)</FormLabel>
               <FormControl>
-                <Input type="number" step="0.1" min="0" max="5" {...field} />
+                <Input type="number" step="0.1" min="0" max="5" {...field} className="bg-background text-foreground" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -190,10 +191,12 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
         />
 
         <div className="flex justify-end gap-2 pt-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} className="text-foreground border-border">
             Cancel
           </Button>
-          <Button type="submit">{initialData ? "Update" : "Add"}</Button>
+          <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            {initialData ? "Update" : "Add"}
+          </Button>
         </div>
       </form>
     </Form>

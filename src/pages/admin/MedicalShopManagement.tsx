@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminDataTable, { DataColumn } from "@/components/admin/shared/AdminDataTable";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import MedicalShopForm, { MedicalShopFormData } from "@/components/admin/forms/MedicalShopForm";
 import { useToast } from "@/hooks/use-toast";
 
@@ -158,11 +158,14 @@ const MedicalShopManagement = () => {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="sm:max-w-[550px] p-6 bg-card text-card-foreground">
+          <DialogHeader className="pb-4">
+            <DialogTitle className="text-xl font-bold text-foreground">
               {isEditing ? "Edit Medical Shop" : "Add New Medical Shop"}
             </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              {isEditing ? "Edit the details of this medical shop." : "Add a new medical shop to the database."}
+            </DialogDescription>
           </DialogHeader>
           <MedicalShopForm
             initialData={
