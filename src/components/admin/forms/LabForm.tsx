@@ -54,8 +54,8 @@ export const LabForm: React.FC<LabFormProps> = ({
       ? {
           name: initialData.name,
           location: initialData.location,
-          phone: initialData.contact?.phone || "",
-          email: initialData.contact?.email || "",
+          phone: initialData.phone,
+          email: initialData.email,
           tests: initialData.tests?.join(", ") || "",
           rating: initialData.rating || 4,
         }

@@ -54,8 +54,8 @@ export const HospitalForm: React.FC<HospitalFormProps> = ({
       ? {
           name: initialData.name,
           location: initialData.location,
-          phone: initialData.contact?.phone || "",
-          email: initialData.contact?.email || "",
+          phone: initialData.phone,
+          email: initialData.email,
           specialties: initialData.specialties?.join(", ") || "",
           rating: initialData.rating || 4,
         }

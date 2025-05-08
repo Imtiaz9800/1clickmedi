@@ -54,8 +54,8 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
       ? {
           name: initialData.name,
           location: initialData.location,
-          phone: initialData.contact?.phone || "",
-          email: initialData.contact?.email || "",
+          phone: initialData.phone,
+          email: initialData.email,
           services: initialData.services?.join(", ") || "",
           rating: initialData.rating || 4,
         }

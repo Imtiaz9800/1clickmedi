@@ -5,24 +5,50 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { createAdminUser } from "@/utils/createAdminUser";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState("admin@gmail.com");
   const [password, setPassword] = useState("123456");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const result = await createAdminUser(email, password);
-      
-      if (result.success) {
+      // Check if the user exists first
+      const { data: { user }, error: userError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (userError) {
+        // If login fails, try to create the admin user
+        const result = await createAdminUser(email, password);
+        
+        if (result.success) {
+          toast({
+            title: "Admin Login Successful",
+            description: "Welcome to the admin dashboard!",
+          });
+          
+          // Redirect to admin dashboard
+          navigate('/admin');
+        } else {
+          toast({
+            title: "Login Failed",
+            description: result.message,
+            variant: "destructive",
+          });
+        }
+      } else {
+        // Login was successful
         toast({
           title: "Admin Login Successful",
           description: "Welcome to the admin dashboard!",
@@ -30,12 +56,6 @@ const AdminLogin: React.FC = () => {
         
         // Redirect to admin dashboard
         navigate('/admin');
-      } else {
-        toast({
-          title: "Login Failed",
-          description: result.message,
-          variant: "destructive",
-        });
       }
     } catch (error) {
       console.error("Login error:", error);
