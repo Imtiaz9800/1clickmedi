@@ -45,8 +45,8 @@ const HospitalManagement = () => {
       label: "Contact",
       render: (contact) => (
         <div>
-          <div className="text-gray-900 dark:text-white">{contact.phone}</div>
-          <div className="text-gray-500 dark:text-gray-400 text-xs">{contact.email}</div>
+          <div className="text-gray-900 dark:text-gray-100">{contact.phone}</div>
+          <div className="text-gray-500 dark:text-gray-300 text-xs">{contact.email}</div>
         </div>
       ),
     },
@@ -58,7 +58,7 @@ const HospitalManagement = () => {
           {specialties.map((specialty: string, index: number) => (
             <span 
               key={index}
-              className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200"
+              className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full dark:bg-blue-800 dark:text-blue-100"
             >
               {specialty}
             </span>
@@ -72,22 +72,35 @@ const HospitalManagement = () => {
       render: (rating) => (
         <div className="flex items-center">
           <span className="text-yellow-500">★</span>
-          <span className="ml-1 text-gray-900 dark:text-white">{rating}</span>
+          <span className="ml-1 text-gray-900 dark:text-gray-100">{rating}</span>
         </div>
       ),
     },
   ];
 
   const handleAddHospital = () => {
-    console.log("Add hospital");
+    const newHospital: Hospital = {
+      id: `${hospitals.length + 1}`,
+      name: `New Hospital ${hospitals.length + 1}`,
+      location: "New Location",
+      contact: {
+        phone: "+91-9876543210",
+        email: "newhospital@example.com"
+      },
+      specialties: ["General Medicine"],
+      rating: 4.0
+    };
+    
+    setHospitals([...hospitals, newHospital]);
   };
 
   const handleEditHospital = (hospital: Hospital) => {
+    // Implementation for editing a hospital would go here
     console.log("Edit hospital", hospital);
   };
 
   const handleDeleteHospital = (hospital: Hospital) => {
-    console.log("Delete hospital", hospital);
+    setHospitals(hospitals.filter(item => item.id !== hospital.id));
   };
 
   return (

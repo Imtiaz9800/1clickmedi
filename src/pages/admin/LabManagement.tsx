@@ -45,8 +45,8 @@ const LabManagement = () => {
       label: "Contact",
       render: (contact) => (
         <div>
-          <div className="text-gray-900 dark:text-white">{contact.phone}</div>
-          <div className="text-gray-500 dark:text-gray-400 text-xs">{contact.email}</div>
+          <div className="text-gray-900 dark:text-gray-100">{contact.phone}</div>
+          <div className="text-gray-500 dark:text-gray-300 text-xs">{contact.email}</div>
         </div>
       ),
     },
@@ -58,7 +58,7 @@ const LabManagement = () => {
           {tests.map((test: string, index: number) => (
             <span 
               key={index}
-              className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200"
+              className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full dark:bg-purple-800 dark:text-purple-100"
             >
               {test}
             </span>
@@ -72,22 +72,35 @@ const LabManagement = () => {
       render: (rating) => (
         <div className="flex items-center">
           <span className="text-yellow-500">★</span>
-          <span className="ml-1 text-gray-900 dark:text-white">{rating}</span>
+          <span className="ml-1 text-gray-900 dark:text-gray-100">{rating}</span>
         </div>
       ),
     },
   ];
 
   const handleAddLab = () => {
-    console.log("Add lab");
+    const newLab: Lab = {
+      id: `${labs.length + 1}`,
+      name: `New Lab ${labs.length + 1}`,
+      location: "New Location",
+      contact: {
+        phone: "+91-9876543210",
+        email: "newlab@example.com"
+      },
+      tests: ["General Test"],
+      rating: 4.0
+    };
+    
+    setLabs([...labs, newLab]);
   };
 
   const handleEditLab = (lab: Lab) => {
+    // Implementation for editing a lab would go here
     console.log("Edit lab", lab);
   };
 
   const handleDeleteLab = (lab: Lab) => {
-    console.log("Delete lab", lab);
+    setLabs(labs.filter(item => item.id !== lab.id));
   };
 
   return (

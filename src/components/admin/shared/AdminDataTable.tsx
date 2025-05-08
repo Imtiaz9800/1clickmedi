@@ -75,7 +75,7 @@ const AdminDataTable: React.FC<AdminDataTableProps> = ({
             <TableBody>
               {data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} className="text-center py-10">
+                  <TableCell colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} className="text-center py-10 text-gray-500 dark:text-gray-400">
                     No data available
                   </TableCell>
                 </TableRow>
@@ -104,7 +104,7 @@ const AdminDataTable: React.FC<AdminDataTableProps> = ({
                             <Button 
                               variant="outline" 
                               size="icon" 
-                              className="h-8 w-8 text-red-600 hover:text-red-700"
+                              className="h-8 w-8 text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
                               onClick={() => onDelete(item)}
                             >
                               <Trash className="h-4 w-4" />

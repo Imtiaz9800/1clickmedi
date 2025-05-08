@@ -45,8 +45,8 @@ const MedicalShopManagement = () => {
       label: "Contact",
       render: (contact) => (
         <div>
-          <div className="text-gray-900 dark:text-white">{contact.phone}</div>
-          <div className="text-gray-500 dark:text-gray-400 text-xs">{contact.email}</div>
+          <div className="text-gray-900 dark:text-gray-100">{contact.phone}</div>
+          <div className="text-gray-500 dark:text-gray-300 text-xs">{contact.email}</div>
         </div>
       ),
     },
@@ -58,7 +58,7 @@ const MedicalShopManagement = () => {
           {services.map((service: string, index: number) => (
             <span 
               key={index}
-              className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full dark:bg-green-900 dark:text-green-200"
+              className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full dark:bg-green-800 dark:text-green-100"
             >
               {service}
             </span>
@@ -72,22 +72,35 @@ const MedicalShopManagement = () => {
       render: (rating) => (
         <div className="flex items-center">
           <span className="text-yellow-500">★</span>
-          <span className="ml-1 text-gray-900 dark:text-white">{rating}</span>
+          <span className="ml-1 text-gray-900 dark:text-gray-100">{rating}</span>
         </div>
       ),
     },
   ];
 
   const handleAddShop = () => {
-    console.log("Add medical shop");
+    const newShop: MedicalShop = {
+      id: `${shops.length + 1}`,
+      name: `New Medical Shop ${shops.length + 1}`,
+      location: "New Location",
+      contact: {
+        phone: "+91-9876543210",
+        email: "newshop@example.com"
+      },
+      services: ["General Service"],
+      rating: 4.0
+    };
+    
+    setShops([...shops, newShop]);
   };
 
   const handleEditShop = (shop: MedicalShop) => {
+    // Implementation for editing a shop would go here
     console.log("Edit medical shop", shop);
   };
 
   const handleDeleteShop = (shop: MedicalShop) => {
-    console.log("Delete medical shop", shop);
+    setShops(shops.filter(item => item.id !== shop.id));
   };
 
   return (
