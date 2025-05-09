@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/components/ui/use-toast";
 import { Trash2, Edit, Plus, Search } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -454,9 +453,12 @@ const DoctorManagement: React.FC = () => {
 
       {/* Add/Edit Doctor Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className={`${isMobile ? 'w-[95%]' : 'max-w-3xl'} max-h-[90vh] overflow-y-auto`}>
+        <DialogContent className={`${isMobile ? 'w-[95%]' : 'max-w-3xl'} max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100`}>
           <DialogHeader>
             <DialogTitle className="text-xl">{isEditMode ? 'Edit Doctor' : 'Add New Doctor'}</DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-300">
+              {isEditMode ? 'Update doctor information in the database.' : 'Add a new doctor to the database.'}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
             {/* Basic Information */}
@@ -505,14 +507,14 @@ const DoctorManagement: React.FC = () => {
               <div>
                 <Label htmlFor="category_id">Category</Label>
                 <Select 
-                  value={formData.category_id || ''} 
-                  onValueChange={(value) => handleSelectChange('category_id', value)}
+                  value={formData.category_id || 'none'} 
+                  onValueChange={(value) => handleSelectChange('category_id', value === 'none' ? null : value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
@@ -610,7 +612,7 @@ const DoctorManagement: React.FC = () => {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
           </DialogHeader>
