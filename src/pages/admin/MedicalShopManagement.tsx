@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminDataTable, { DataColumn } from "@/components/admin/shared/AdminDataTable";
@@ -293,7 +292,9 @@ const MedicalShopManagement = () => {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[650px] md:max-w-[700px] p-0 bg-card text-card-foreground">
+        <DialogContent 
+          className="w-[90vw] max-w-[800px] h-auto max-h-[90vh] p-0 bg-card text-card-foreground" 
+          onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader className="p-6 pb-0">
             <DialogTitle className="text-xl font-bold text-foreground">
               {isEditing ? "Edit Medical Shop" : "Add New Medical Shop"}
@@ -302,7 +303,7 @@ const MedicalShopManagement = () => {
               {isEditing ? "Edit the details of this medical shop." : "Add a new medical shop to the database."}
             </DialogDescription>
           </DialogHeader>
-          <div className="p-6 pt-3 overflow-y-auto max-h-[80vh]">
+          <div className="p-6 pt-3 overflow-y-auto max-h-[calc(90vh-120px)]">
             <MedicalShopForm
               initialData={
                 currentShop
