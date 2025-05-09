@@ -33,6 +33,7 @@ type AdminDataTableProps = {
   onAdd?: () => void;
   onEdit?: (item: any) => void;
   onDelete?: (item: any) => void;
+  isLoading?: boolean; // Added isLoading prop
 };
 
 const AdminDataTable: React.FC<AdminDataTableProps> = ({
@@ -45,6 +46,7 @@ const AdminDataTable: React.FC<AdminDataTableProps> = ({
   onAdd,
   onEdit,
   onDelete,
+  isLoading = false, // Added with a default value of false
 }) => {
   return (
     <>
@@ -73,7 +75,16 @@ const AdminDataTable: React.FC<AdminDataTableProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.length === 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} className="text-center py-10">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      <span className="ml-2 text-gray-600 dark:text-gray-400">Loading data...</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : data.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} className="text-center py-10 text-gray-500 dark:text-gray-400">
                     No data available
