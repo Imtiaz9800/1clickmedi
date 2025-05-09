@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Store, MapPin, Phone, Clock, Loader2 } from "lucide-react";
+import { Store, MapPin, Phone, Clock, Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface MedicalShop {
   id: string;
@@ -33,6 +34,7 @@ const MedicalShopsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [serviceFilter, setServiceFilter] = useState(searchParams.get("service") || "");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMedicalShops();
@@ -62,7 +64,10 @@ const MedicalShopsPage: React.FC = () => {
   const fetchMedicalShops = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      setError(null);
+      
+      // First check if we can get data from Supabase
+      let { data, error } = await supabase
         .from('medical_shops')
         .select('*')
         .order('name');
@@ -71,10 +76,66 @@ const MedicalShopsPage: React.FC = () => {
         throw error;
       }
 
-      setMedicalShops(data || []);
-      setFilteredShops(data || []);
+      if (data && data.length > 0) {
+        setMedicalShops(data);
+        setFilteredShops(data);
+      } else {
+        // Fallback to demo data if no data in Supabase
+        const demoShops = [
+          {
+            id: "demo1",
+            name: "MedPlus Pharmacy",
+            address: "123 Medical Lane",
+            city: "Mumbai",
+            state: "Maharashtra",
+            phone: "+91-9876543210",
+            email: "medplus@example.com",
+            opening_hours: "Mon-Sat: 9 AM - 9 PM",
+            services: ["24/7 Service", "Home Delivery", "Prescription Refills"],
+            image_url: null,
+            rating: 4.7
+          },
+          {
+            id: "demo2",
+            name: "Apollo Pharmacy",
+            address: "456 Health Avenue",
+            city: "Delhi",
+            state: "Delhi",
+            phone: "+91-8765432109",
+            email: "apollo@example.com",
+            opening_hours: "24/7",
+            services: ["Online Consultations", "Medicine Delivery", "Health Products"],
+            image_url: null,
+            rating: 4.5
+          }
+        ];
+        
+        setMedicalShops(demoShops);
+        setFilteredShops(demoShops);
+      }
     } catch (error) {
       console.error("Error fetching medical shops:", error);
+      setError("Failed to load medical shops. Please try again later.");
+      
+      // Set demo data as fallback
+      const demoShops = [
+        {
+          id: "demo1",
+          name: "MedPlus Pharmacy",
+          address: "123 Medical Lane",
+          city: "Mumbai", 
+          state: "Maharashtra",
+          phone: "+91-9876543210",
+          email: "medplus@example.com",
+          opening_hours: "Mon-Sat: 9 AM - 9 PM",
+          services: ["24/7 Service", "Home Delivery", "Prescription Refills"],
+          image_url: null,
+          rating: 4.7
+        }
+      ];
+      
+      setMedicalShops(demoShops);
+      setFilteredShops(demoShops);
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +178,13 @@ const MedicalShopsPage: React.FC = () => {
             </div>
           </div>
 
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Search and Filter Section */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-8">
             <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -130,7 +198,7 @@ const MedicalShopsPage: React.FC = () => {
               </div>
               <div>
                 <select
-                  className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-gray-600 rounded-md"
+                  className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-input"
                   value={serviceFilter}
                   onChange={(e) => setServiceFilter(e.target.value)}
                 >
@@ -172,7 +240,7 @@ const MedicalShopsPage: React.FC = () => {
                               <AvatarImage src={shop.image_url} alt={shop.name} />
                             ) : null}
                             <AvatarFallback className="bg-emerald-200 text-emerald-700 dark:bg-emerald-700 dark:text-emerald-100 text-lg">
-                              {shop.name[0].toUpperCase()}
+                              {shop.name ? shop.name[0].toUpperCase() : "M"}
                             </AvatarFallback>
                           </Avatar>
                           <div>

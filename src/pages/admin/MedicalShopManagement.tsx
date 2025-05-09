@@ -1,10 +1,11 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminDataTable, { DataColumn } from "@/components/admin/shared/AdminDataTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import MedicalShopForm, { MedicalShopFormData } from "@/components/admin/forms/MedicalShopForm";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MedicalShop {
   id: string;
@@ -16,27 +17,86 @@ interface MedicalShop {
   };
   services: string[];
   rating: number;
+  address?: string;
+  city?: string;
+  state?: string;
+  opening_hours?: string;
 }
 
 const MedicalShopManagement = () => {
   const { toast } = useToast();
-  const [shops, setShops] = useState<MedicalShop[]>([
-    {
-      id: "1",
-      name: "MedPlus Pharmacy",
-      location: "Mumbai, Maharashtra",
-      contact: {
-        phone: "+91-9876543225",
-        email: "medplus@example.com"
-      },
-      services: ["24/7 Service", "Home Delivery"],
-      rating: 4.7
-    }
-  ]);
-
+  const [shops, setShops] = useState<MedicalShop[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentShop, setCurrentShop] = useState<MedicalShop | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    fetchMedicalShops();
+  }, []);
+
+  const fetchMedicalShops = async () => {
+    try {
+      setIsLoading(true);
+      
+      const { data, error } = await supabase
+        .from('medical_shops')
+        .select('*')
+        .order('name');
+        
+      if (error) {
+        throw error;
+      }
+      
+      if (data) {
+        const formattedShops = data.map(shop => ({
+          id: shop.id,
+          name: shop.name,
+          location: shop.city + ', ' + shop.state,
+          contact: {
+            phone: shop.phone,
+            email: shop.email
+          },
+          services: shop.services,
+          rating: shop.rating || 0,
+          address: shop.address,
+          city: shop.city,
+          state: shop.state,
+          opening_hours: shop.opening_hours
+        }));
+        
+        setShops(formattedShops);
+      }
+    } catch (error) {
+      console.error("Error fetching medical shops:", error);
+      toast({
+        title: "Failed to load medical shops",
+        description: "There was an error loading the medical shops data. Using demo data instead.",
+        variant: "destructive",
+      });
+      
+      // Set demo data
+      setShops([
+        {
+          id: "1",
+          name: "MedPlus Pharmacy",
+          location: "Mumbai, Maharashtra",
+          contact: {
+            phone: "+91-9876543225",
+            email: "medplus@example.com"
+          },
+          services: ["24/7 Service", "Home Delivery"],
+          rating: 4.7,
+          address: "123 Health St",
+          city: "Mumbai",
+          state: "Maharashtra",
+          opening_hours: "24/7"
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const columns: DataColumn[] = [
     {
@@ -97,50 +157,124 @@ const MedicalShopManagement = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDeleteShop = (shop: MedicalShop) => {
-    setShops(shops.filter(item => item.id !== shop.id));
-    toast({
-      title: "Medical shop removed",
-      description: `${shop.name} has been removed from the database.`,
-    });
+  const handleDeleteShop = async (shop: MedicalShop) => {
+    try {
+      // Delete from Supabase
+      const { error } = await supabase
+        .from('medical_shops')
+        .delete()
+        .eq('id', shop.id);
+        
+      if (error) throw error;
+      
+      // Update local state
+      setShops(shops.filter(item => item.id !== shop.id));
+      
+      toast({
+        title: "Medical shop removed",
+        description: `${shop.name} has been removed from the database.`,
+      });
+    } catch (error) {
+      console.error("Error deleting shop:", error);
+      toast({
+        title: "Failed to remove medical shop",
+        description: "An error occurred while trying to delete the medical shop.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleFormSubmit = (data: MedicalShopFormData) => {
-    if (isEditing && currentShop) {
-      // Update existing shop
-      setShops(shops.map(shop => 
-        shop.id === currentShop.id 
-          ? {
-              ...shop,
-              name: data.name,
-              location: data.location,
-              contact: {
-                phone: data.phone,
-                email: data.email
-              },
-              services: data.services,
-              rating: data.rating
-            } 
-          : shop
-      ));
-    } else {
-      // Add new shop
-      const newShop: MedicalShop = {
-        id: `${shops.length + 1}`,
-        name: data.name,
-        location: data.location,
-        contact: {
-          phone: data.phone,
-          email: data.email
-        },
-        services: data.services,
-        rating: data.rating
-      };
+  const handleFormSubmit = async (data: MedicalShopFormData) => {
+    try {
+      if (isEditing && currentShop) {
+        // Update existing shop in Supabase
+        const { error } = await supabase
+          .from('medical_shops')
+          .update({
+            name: data.name,
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            phone: data.phone,
+            email: data.email,
+            opening_hours: data.opening_hours,
+            services: data.services,
+            rating: data.rating
+          })
+          .eq('id', currentShop.id);
+          
+        if (error) throw error;
+        
+        // Update local state
+        setShops(shops.map(shop => 
+          shop.id === currentShop.id 
+            ? {
+                ...shop,
+                name: data.name,
+                location: `${data.city}, ${data.state}`,
+                contact: {
+                  phone: data.phone,
+                  email: data.email
+                },
+                services: data.services,
+                rating: data.rating,
+                address: data.address,
+                city: data.city,
+                state: data.state,
+                opening_hours: data.opening_hours
+              } 
+            : shop
+        ));
+      } else {
+        // Add new shop to Supabase
+        const { data: newShop, error } = await supabase
+          .from('medical_shops')
+          .insert({
+            name: data.name,
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            phone: data.phone,
+            email: data.email,
+            opening_hours: data.opening_hours,
+            services: data.services,
+            rating: data.rating
+          })
+          .select();
+          
+        if (error) throw error;
+        
+        if (newShop && newShop.length > 0) {
+          // Add new shop to local state
+          const formattedShop: MedicalShop = {
+            id: newShop[0].id,
+            name: data.name,
+            location: `${data.city}, ${data.state}`,
+            contact: {
+              phone: data.phone,
+              email: data.email
+            },
+            services: data.services,
+            rating: data.rating,
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            opening_hours: data.opening_hours
+          };
+          
+          setShops([...shops, formattedShop]);
+        }
+      }
       
-      setShops([...shops, newShop]);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving medical shop:", error);
+      toast({
+        title: `Failed to ${isEditing ? 'update' : 'add'} medical shop`,
+        description: "An error occurred while saving the medical shop data.",
+        variant: "destructive"
+      });
     }
-    
-    setIsDialogOpen(false);
   };
 
   return (
@@ -155,11 +289,12 @@ const MedicalShopManagement = () => {
         onAdd={handleAddShop}
         onEdit={handleEditShop}
         onDelete={handleDeleteShop}
+        isLoading={isLoading}
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[550px] p-6 bg-card text-card-foreground">
-          <DialogHeader className="pb-4">
+        <DialogContent className="sm:max-w-[650px] md:max-w-[700px] p-0 bg-card text-card-foreground">
+          <DialogHeader className="p-6 pb-0">
             <DialogTitle className="text-xl font-bold text-foreground">
               {isEditing ? "Edit Medical Shop" : "Add New Medical Shop"}
             </DialogTitle>
@@ -167,23 +302,29 @@ const MedicalShopManagement = () => {
               {isEditing ? "Edit the details of this medical shop." : "Add a new medical shop to the database."}
             </DialogDescription>
           </DialogHeader>
-          <MedicalShopForm
-            initialData={
-              currentShop
-                ? {
-                    id: currentShop.id,
-                    name: currentShop.name,
-                    location: currentShop.location,
-                    phone: currentShop.contact.phone,
-                    email: currentShop.contact.email,
-                    services: currentShop.services,
-                    rating: currentShop.rating
-                  }
-                : undefined
-            }
-            onSubmit={handleFormSubmit}
-            onCancel={() => setIsDialogOpen(false)}
-          />
+          <div className="p-6 pt-3 overflow-y-auto max-h-[80vh]">
+            <MedicalShopForm
+              initialData={
+                currentShop
+                  ? {
+                      id: currentShop.id,
+                      name: currentShop.name,
+                      location: currentShop.location,
+                      phone: currentShop.contact.phone,
+                      email: currentShop.contact.email,
+                      services: currentShop.services,
+                      rating: currentShop.rating,
+                      address: currentShop.address,
+                      city: currentShop.city,
+                      state: currentShop.state,
+                      opening_hours: currentShop.opening_hours
+                    }
+                  : undefined
+              }
+              onSubmit={handleFormSubmit}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>

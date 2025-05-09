@@ -119,7 +119,7 @@ export const MedicalShopForm: React.FC<MedicalShopFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 w-full max-w-4xl mx-auto px-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <FormField
