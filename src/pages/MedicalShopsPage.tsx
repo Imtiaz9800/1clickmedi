@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Store, MapPin, Phone, Clock, Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
 interface MedicalShop {
   id: string;
@@ -29,12 +30,14 @@ interface MedicalShop {
 const MedicalShopsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { toast } = useToast();
   const [medicalShops, setMedicalShops] = useState<MedicalShop[]>([]);
   const [filteredShops, setFilteredShops] = useState<MedicalShop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [serviceFilter, setServiceFilter] = useState(searchParams.get("service") || "");
   const [error, setError] = useState<string | null>(null);
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
   useEffect(() => {
     fetchMedicalShops();
@@ -66,6 +69,8 @@ const MedicalShopsPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       
+      console.log("Fetching medical shops from Supabase...");
+      
       // First check if we can get data from Supabase
       let { data, error } = await supabase
         .from('medical_shops')
@@ -73,13 +78,16 @@ const MedicalShopsPage: React.FC = () => {
         .order('name');
 
       if (error) {
+        console.error("Supabase error:", error);
         throw error;
       }
 
       if (data && data.length > 0) {
+        console.log("Fetched shops from Supabase:", data);
         setMedicalShops(data);
         setFilteredShops(data);
       } else {
+        console.log("No data in Supabase, using demo shops");
         // Fallback to demo data if no data in Supabase
         const demoShops = [
           {
@@ -112,6 +120,13 @@ const MedicalShopsPage: React.FC = () => {
         
         setMedicalShops(demoShops);
         setFilteredShops(demoShops);
+        
+        // Show a toast to inform the user we're using demo data
+        toast({
+          title: "Using demo data",
+          description: "Currently displaying example medical shops.",
+          duration: 5000,
+        });
       }
     } catch (error) {
       console.error("Error fetching medical shops:", error);
@@ -138,6 +153,7 @@ const MedicalShopsPage: React.FC = () => {
       setFilteredShops(demoShops);
     } finally {
       setIsLoading(false);
+      setHasAttemptedFetch(true);
     }
   };
 
@@ -226,6 +242,15 @@ const MedicalShopsPage: React.FC = () => {
               <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                 We couldn't find any medical shops matching your search criteria. Please try with different search terms.
               </p>
+              {hasAttemptedFetch && !medicalShops.length && (
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={fetchMedicalShops}
+                >
+                  Retry Loading
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
